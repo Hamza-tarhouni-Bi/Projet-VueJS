@@ -14,7 +14,6 @@ export class AuthorEntity extends TimeStampISIDS {
         
         @Column()
         nom : string;
-        
         @OneToMany(() => BookEntity, book => book.author)
 listeLivres: BookEntity[];
 }
