@@ -23,16 +23,12 @@ const fetchBooks = async () => {
   const res = await fetch('http://localhost:3000/books/all')
   const data = await res.json()
   books.value = data.listeBooks ?? data
-  console.log('📚 books sample:', JSON.stringify(books.value[0], null, 2)) // 👈
 }
 
 const fetchAuthors = async () => {
   const res = await fetch('http://localhost:3000/author/all')
   authors.value = await res.json()
-  console.log('👤 authors sample:', JSON.stringify(authors.value[0], null, 2)) // 👈
 }
-
-
 
 const getAuthorName = (authorId: any) => {
   if (!authorId) return 'Unknown'
@@ -53,21 +49,12 @@ const openEdit = (book: any) => {
     year: book.year,
     editor: book.editor,
     image: book.image,
-    // ✅ Récupère l'id que book.author soit un objet ou un simple id
     authorId: book.author?.id ?? book.author
   }
   showForm.value = true
 }
 
-// ✅ FIX : envoie authorId au lieu de author dans le POST et PUT
 const submitForm = async () => {
- console.log('📤 form envoyé:', JSON.stringify({
-    title: form.value.title,
-    year: Number(form.value.year),
-    editor: form.value.editor,
-    image: form.value.image,
-    authorId: Number(form.value.authorId)
-  }, null, 2))
   if (editingBook.value) {
     await axios.put(`http://localhost:3000/books/edit/${editingBook.value.id}`, {
       id: editingBook.value.id,
@@ -75,7 +62,7 @@ const submitForm = async () => {
       year: Number(form.value.year),
       editor: form.value.editor,
       image: form.value.image,
-      authorId: Number(form.value.authorId) // ✅ authorId
+      authorId: Number(form.value.authorId)
     }, { headers })
   } else {
     await fetch('http://localhost:3000/books/new', {
@@ -86,11 +73,10 @@ const submitForm = async () => {
         year: Number(form.value.year),
         editor: form.value.editor,
         image: form.value.image,
-        authorId: Number(form.value.authorId) // ✅ authorId
+        authorId: Number(form.value.authorId)
       })
     })
   }
-
   showForm.value = false
   await fetchBooks()
 }
@@ -112,44 +98,42 @@ const deleteBook = async (id: number) => {
 
     <p v-if="loading" class="loading">Loading...</p>
 
-    <table v-else class="table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Title</th>
-          <th>Editor</th>
-          <th>Year</th>
-          <th>Author</th>
-          <th>Image</th>
-          <th></th>
-          <th></th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr v-for="book in books" :key="book.id">
-          <td>{{ book.id }}</td>
-          <td>{{ book.title }}</td>
-          <td>{{ book.editor }}</td>
-          <td>{{ book.year }}</td>
-          <td>{{ getAuthorName(book.authorId) }}</td>
-          <td class="image-url">{{ book.image }}</td>
-          <td>
-            <button class="icon-btn" @click="deleteBook(book.id)">✂</button>
-          </td>
-          <td>
-            <button class="icon-btn" @click="openEdit(book)">✎</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-else class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Editor</th>
+            <th>Year</th>
+            <th>Author</th>
+            <th>Image</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="book in books" :key="book.id">
+            <td>{{ book.id }}</td>
+            <td>{{ book.title }}</td>
+            <td>{{ book.editor }}</td>
+            <td>{{ book.year }}</td>
+            <td>{{ getAuthorName(book.authorId) }}</td>
+            <td class="image-url">{{ book.image }}</td>
+            <td>
+              <button class="icon-btn delete" @click="deleteBook(book.id)">✂</button>
+            </td>
+            <td>
+              <button class="icon-btn" @click="openEdit(book)">✎</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <div v-if="showForm" class="modal">
       <div class="modal-content">
-
-        <h2 class="modal-title">
-          {{ editingBook ? 'Edit Book' : 'Add Book' }}
-        </h2>
+        <h2 class="modal-title">{{ editingBook ? 'Edit Book' : 'Add Book' }}</h2>
 
         <div class="form-group">
           <label>Title</label>
@@ -171,7 +155,6 @@ const deleteBook = async (id: number) => {
           <input v-model="form.image" placeholder="https://..." />
         </div>
 
-        <!-- ✅ MODIFIÉ : retiré v-if="!editingBook" → visible en création ET édition -->
         <div class="form-group">
           <label>Author</label>
           <select v-model="form.authorId">
@@ -188,7 +171,6 @@ const deleteBook = async (id: number) => {
           </button>
           <button class="btn cancel" @click="showForm = false">Cancel</button>
         </div>
-
       </div>
     </div>
 
@@ -208,6 +190,12 @@ const deleteBook = async (id: number) => {
   margin-bottom: 15px;
 }
 
+.header h1 {
+  font-size: 22px;
+  font-weight: bold;
+  color: #1f2937;
+}
+
 .add-btn {
   background-color: #2b6cb0;
   color: white;
@@ -217,20 +205,40 @@ const deleteBook = async (id: number) => {
   cursor: pointer;
 }
 
+.add-btn:hover {
+  background-color: #1e4e8c;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
   background: #f5f5f5;
+  min-width: 700px;
 }
 
 .table th {
   background: #e0e0e0;
   padding: 10px;
+  text-align: left;
 }
 
 .table td {
   padding: 10px;
   border-top: 1px solid #ccc;
+}
+
+.image-url {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #6b7280;
 }
 
 .icon-btn {
@@ -242,6 +250,18 @@ const deleteBook = async (id: number) => {
   cursor: pointer;
 }
 
+.icon-btn:hover {
+  background: #1e4e8c;
+}
+
+.icon-btn.delete {
+  background: #e53e3e;
+}
+
+.icon-btn.delete:hover {
+  background: #c53030;
+}
+
 .modal {
   position: fixed;
   inset: 0;
@@ -249,6 +269,8 @@ const deleteBook = async (id: number) => {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 50;
+  padding: 1rem;
 }
 
 .modal-content {
@@ -267,7 +289,6 @@ const deleteBook = async (id: number) => {
   text-align: center;
   font-size: 20px;
   font-weight: bold;
-  margin-bottom: 5px;
 }
 
 .form-group {
@@ -329,5 +350,10 @@ const deleteBook = async (id: number) => {
 
 .cancel:hover {
   background: #d1d5db;
+}
+
+@media (max-width: 640px) {
+  .header h1 { font-size: 18px; }
+  .page { padding: 12px; }
 }
 </style>

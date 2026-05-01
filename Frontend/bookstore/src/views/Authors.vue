@@ -54,10 +54,7 @@ const submitForm = async () => {
 
 const deleteAuthor = async (id: number) => {
   if (!confirm('Delete this author?')) return
-  await fetch(`http://localhost:3000/author/delete/${id}`, {
-    method: 'DELETE',
-    headers
-  })
+  await fetch(`http://localhost:3000/author/delete/${id}`, { method: 'DELETE', headers })
   await fetchAuthors()
 }
 </script>
@@ -67,13 +64,13 @@ const deleteAuthor = async (id: number) => {
 
     <div class="header">
       <h1>Manage Authors</h1>
-      <button @click="openCreate" class="btn-primary">Add Author</button>
+      <button @click="openCreate" class="add-btn">Add Author</button>
     </div>
 
     <p v-if="loading" class="loading">Loading...</p>
 
-    <div v-else class="table-container">
-      <table>
+    <div v-else class="table-wrapper">
+      <table class="table">
         <thead>
           <tr>
             <th>ID</th>
@@ -83,14 +80,13 @@ const deleteAuthor = async (id: number) => {
             <th></th>
           </tr>
         </thead>
-
         <tbody>
           <tr v-for="author in authors" :key="author.id">
-            <td class="id">{{ author.id }}</td>
-            <td class="name">{{ author.prenom }}</td>
+            <td>{{ author.id }}</td>
+            <td>{{ author.prenom }}</td>
             <td>{{ author.nom }}</td>
             <td>
-              <button class="icon-btn edit" @click="openEdit(author)">✎</button>
+              <button class="icon-btn" @click="openEdit(author)">✎</button>
             </td>
             <td>
               <button class="icon-btn delete" @click="deleteAuthor(author.id)">✂</button>
@@ -100,24 +96,26 @@ const deleteAuthor = async (id: number) => {
       </table>
     </div>
 
-    <!-- Modal -->
-    <div v-if="showForm" class="modal-overlay">
-      <div class="modal">
+    <div v-if="showForm" class="modal">
+      <div class="modal-content">
+        <h2 class="modal-title">{{ editingAuthor ? 'Edit Author' : 'Add Author' }}</h2>
 
-        <h2>{{ editingAuthor ? 'Edit Author' : 'Add Author' }}</h2>
-
-        <div class="inputs">
+        <div class="form-group">
+          <label>First Name</label>
           <input v-model="form.prenom" placeholder="First Name" />
+        </div>
+
+        <div class="form-group">
+          <label>Last Name</label>
           <input v-model="form.nom" placeholder="Last Name" />
         </div>
 
-        <div class="actions">
-          <button @click="submitForm" class="btn-primary">
+        <div class="modal-actions">
+          <button class="btn save" @click="submitForm">
             {{ editingAuthor ? 'Save Changes' : 'Create' }}
           </button>
-          <button @click="showForm = false" class="btn-secondary">Cancel</button>
+          <button class="btn cancel" @click="showForm = false">Cancel</button>
         </div>
-
       </div>
     </div>
 
@@ -126,8 +124,7 @@ const deleteAuthor = async (id: number) => {
 
 <style scoped>
 .page {
-  padding: 2rem;
-  background-color: #f3f4f6;
+  padding: 20px;
   min-height: 100vh;
 }
 
@@ -135,7 +132,7 @@ const deleteAuthor = async (id: number) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 15px;
 }
 
 .header h1 {
@@ -144,155 +141,153 @@ const deleteAuthor = async (id: number) => {
   color: #1f2937;
 }
 
-.btn-primary {
-  background-color: #2563eb;
+.add-btn {
+  background-color: #2b6cb0;
   color: white;
-  padding: 8px 16px;
-  border-radius: 12px;
+  padding: 8px 15px;
   border: none;
+  border-radius: 5px;
   cursor: pointer;
-  transition: 0.25s;
 }
 
-.btn-primary:hover {
-  background-color: #1d4ed8;
+.add-btn:hover {
+  background-color: #1e4e8c;
 }
 
-.btn-secondary {
-  background-color: #e5e7eb;
-  color: #374151;
-  padding: 8px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  transition: 0.25s;
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
-.btn-secondary:hover {
-  background-color: #d1d5db;
-}
-
-.loading {
-  text-align: center;
-  color: #6b7280;
-}
-
-.table-container {
-  background-color: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  overflow: hidden;
-}
-
-table {
+.table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  background: #f5f5f5;
+  min-width: 400px;
 }
 
-thead {
-  background-color: #f9fafb;
-  color: #6b7280;
-  text-transform: uppercase;
-  font-size: 12px;
-}
-
-th {
-  padding: 12px;
+.table th {
+  background: #e0e0e0;
+  padding: 10px;
   text-align: left;
 }
 
-td {
-  padding: 12px;
+.table td {
+  padding: 10px;
+  border-top: 1px solid #ccc;
 }
 
-tbody tr {
-  border-top: 1px solid #f3f4f6;
-}
-
-.id {
-  color: #9ca3af;
-}
-
-.name {
-  font-weight: 600;
-  color: #1f2937;
-}
-
-/* Boutons icônes */
 .icon-btn {
+  background: #2b6cb0;
+  color: white;
   border: none;
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
-  transition: 0.2s;
-  color: white;
 }
 
-.icon-btn.edit {
-  background-color: #2563eb;
-}
-
-.icon-btn.edit:hover {
-  background-color: #1d4ed8;
+.icon-btn:hover {
+  background: #1e4e8c;
 }
 
 .icon-btn.delete {
-  background-color: #ef4444;
+  background: #e53e3e;
 }
 
 .icon-btn.delete:hover {
-  background-color: #dc2626;
-}
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
+  background: #c53030;
 }
 
 .modal {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 350px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  padding: 1rem;
 }
 
-.modal h2 {
-  margin-bottom: 1rem;
-  font-size: 18px;
+.modal-content {
+  background: white;
+  padding: 25px;
+  width: 100%;
+  max-width: 380px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-title {
+  text-align: center;
+  font-size: 20px;
   font-weight: bold;
 }
 
-.inputs {
+.form-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
 }
 
-.inputs input {
-  padding: 10px 14px;
+.form-group label {
+  font-size: 13px;
+  color: #374151;
+}
+
+.form-group input {
+  padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid #d1d5db;
   font-size: 14px;
   transition: 0.2s;
 }
 
-.inputs input:focus {
+.form-group input:focus {
   outline: none;
   border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
-.actions {
+.modal-actions {
   display: flex;
   gap: 10px;
-  margin-top: 1.2rem;
+  margin-top: 10px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.save {
+  background: #2563eb;
+  color: white;
+}
+
+.save:hover {
+  background: #1d4ed8;
+}
+
+.cancel {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.cancel:hover {
+  background: #d1d5db;
+}
+
+@media (max-width: 640px) {
+  .header h1 { font-size: 18px; }
+  .page { padding: 12px; }
 }
 </style>

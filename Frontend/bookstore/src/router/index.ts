@@ -9,6 +9,7 @@ import NotFound from '../views/NotFound.vue'
 import Books from '../views/Books.vue'
 import AllBooks from '../views/AllBooks.vue'
 import AdminLogin from '../views/AdminLogin.vue'
+import Favourites from'../views/Favourites.vue'
 
 const routes: Array<RouteRecordRaw>=[
   { path: '/', redirect: '/login' },
@@ -17,6 +18,7 @@ const routes: Array<RouteRecordRaw>=[
   { path: '/signup', name: 'Signup', component: Signup },
   { path: '/admin/login', name: 'AdminLogin', component: AdminLogin },
   { path: '/home', name: 'Home', component: Home },
+  { path: '/favourites', name: 'Favourites', component: Favourites, meta: { requiresAuth: true } },
 
   {
     path: '/admin/books',

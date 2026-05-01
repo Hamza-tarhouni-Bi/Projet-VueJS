@@ -75,6 +75,14 @@ const isActive = (path: string) => route.path === path
           All Books
         </span>
 
+        <span
+          class="link"
+          :class="{ active: isActive('/favourites') }"
+          @click="router.push('/favourites')"
+        >
+           Favourites
+        </span>
+
         <span class="link logout" @click="logout">
           Logout
         </span>
@@ -98,20 +106,17 @@ const isActive = (path: string) => route.path === path
   border-bottom: 2px solid #ddd;
 }
 
-/* Logo */
 .logo {
   font-size: 22px;
   font-weight: bold;
   cursor: pointer;
 }
 
-/* Links container */
 .links {
   display: flex;
   gap: 25px;
 }
 
-/* Links */
 .link {
   cursor: pointer;
   font-size: 14px;
@@ -119,19 +124,16 @@ const isActive = (path: string) => route.path === path
   transition: 0.2s;
 }
 
-/* Hover (only visual, not affecting active logic) */
 .link:hover {
   color: white;
 }
 
-/* Active link (ONLY when active) */
 .link.active {
   font-weight: bold;
   text-decoration: underline;
   color: white;
 }
 
-/* Logout */
 .logout {
   color: red;
 }
